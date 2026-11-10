@@ -239,7 +239,7 @@ details.bulk summary { cursor: pointer; font-weight: 600; }
         <summary>Pegar una lista o cargar un archivo</summary>
         <div class="bulk-body">
           <p class="note">Una persona por línea, con el nombre y luego las oportunidades. Sirve pegar dos columnas copiadas desde Excel, o texto como <b>DIANA LLERENA, 3</b>. Si no pones un número, recibe 1 oportunidad. Si el nombre ya existe, se suman las oportunidades.</p>
-          <textarea id="bulk-text" placeholder="DIANA LLERENA, 3&#10;MARTHA ROJAS VEGA, 4&#10;JORGE QUISPE, 1" aria-label="Lista de participantes"></textarea>
+          <textarea id="bulk-text" placeholder="DIANA LLERENA, 3&#10;CARMEN VARGAS, 4&#10;JORGE QUISPE, 1" aria-label="Lista de participantes"></textarea>
           <div class="bulk-actions">
             <button type="button" class="primary" id="bulk-add">Agregar a la lista</button>
             <label class="btn" for="file-in">
@@ -308,8 +308,8 @@ details.bulk summary { cursor: pointer; font-weight: 600; }
 
   var state = { people: [], results: [], running: false, skip: false, example: false, shown: 0 };
   var EXAMPLES = [
-    ['DIANA LLERENA', 3], ['CARLOS MENDOZA PAREDES', 1], ['LUCÍA FERNÁNDEZ', 2], ['JORGE QUISPE', 1],
-    ['MARTHA ROJAS VEGA', 4], ['ANDRÉS SALAZAR', 1], ['ROSA HUAMÁN', 2], ['PEDRO CASTILLO', 1]
+    ['DIANA LLERENA', 3], ['CARLOS QUISPE', 1], ['LUCÍA FERNÁNDEZ', 2], ['JORGE QUISPE', 1],
+    ['CARMEN VARGAS', 4], ['ANDRÉS SALAZAR', 1], ['ROSA HUAMÁN', 2], ['PEDRO CASTILLO', 1]
   ];
 
   var list = $('list'), statusEl = $('status'), hint = $('hint'), prizes = $('prizes');
