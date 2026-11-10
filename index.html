@@ -1,0 +1,698 @@
+<!doctype html><html><head><meta charset=utf8><meta name=viewport content="width=device-width,initial-scale=1,viewport-fit=cover"><style>:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#fff;color:#000}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}</style></head><body>
+<title>Sorteo Ganadores SU</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,500..800&family=DM+Sans:wght@400;500;600;700&family=JetBrains+Mono:wght@500;700&display=swap">
+<style>
+/* Layout: lista de participantes a la izquierda, panel de sorteo y boletos ganadores a la derecha; una columna en el celular. */
+:root {
+  --bg: #EDF0F7;
+  --surface: #FFFFFF;
+  --ink: #14173A;
+  --muted: #565B86;
+  --line: #D3D9EC;
+  --field: #F4F6FB;
+  --accent: #E5254F;
+  --accent-ink: #FFFFFF;
+  --win: #FFC53D;
+  --win-ink: #3A2A00;
+  --danger: #B4162F;
+  --font-display: 'Bricolage Grotesque', 'Segoe UI', system-ui, sans-serif;
+  --font-body: 'DM Sans', 'Segoe UI', system-ui, sans-serif;
+  --font-mono: 'JetBrains Mono', ui-monospace, Menlo, Consolas, monospace;
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --bg: #0D0F2E;
+    --surface: #161943;
+    --ink: #EEF0FF;
+    --muted: #9CA2D2;
+    --line: #2B3068;
+    --field: #0F1237;
+    --accent: #FF5C7E;
+    --accent-ink: #1B0610;
+    --danger: #FF8A9E;
+    color-scheme: dark;
+  }
+}
+:root[data-theme="dark"] {
+  --bg: #0D0F2E;
+  --surface: #161943;
+  --ink: #EEF0FF;
+  --muted: #9CA2D2;
+  --line: #2B3068;
+  --field: #0F1237;
+  --accent: #FF5C7E;
+  --accent-ink: #1B0610;
+  --danger: #FF8A9E;
+  color-scheme: dark;
+}
+
+* { box-sizing: border-box; }
+body {
+  background: var(--bg);
+  color: var(--ink);
+  font-family: var(--font-body);
+  font-size: 15px;
+  line-height: 1.5;
+  padding-block: 28px 56px;
+  padding-left: max(16px, env(safe-area-inset-left, 0px));
+  padding-right: max(16px, env(safe-area-inset-right, 0px));
+}
+.wrap { max-width: 1120px; margin: 0 auto; display: flex; flex-direction: column; gap: 22px; }
+
+/* Header */
+.top { display: flex; flex-wrap: wrap; align-items: flex-end; justify-content: space-between; gap: 16px 32px; }
+.top h1 {
+  font-family: var(--font-display);
+  font-weight: 800;
+  font-size: clamp(34px, 6vw, 56px);
+  line-height: 1;
+  letter-spacing: -0.02em;
+  margin: 0 0 8px;
+  text-wrap: balance;
+}
+.lead { margin: 0; max-width: 56ch; color: var(--muted); }
+.stats { display: flex; gap: 10px; }
+.stat {
+  background: var(--surface);
+  border-radius: 12px;
+  padding: 10px 16px;
+  min-width: 112px;
+  display: flex; flex-direction: column; gap: 2px;
+}
+.stat b { font-family: var(--font-mono); font-size: 26px; line-height: 1.1; font-variant-numeric: tabular-nums; }
+.stat span { font-size: 12px; color: var(--muted); letter-spacing: 0.04em; text-transform: uppercase; }
+
+/* Layout */
+.layout { display: grid; grid-template-columns: minmax(0, 1.05fr) minmax(0, 1fr); gap: 22px; align-items: start; }
+.side { display: flex; flex-direction: column; gap: 22px; min-width: 0; }
+@media (max-width: 860px) { .layout { grid-template-columns: minmax(0, 1fr); } }
+
+.panel { background: var(--surface); border-radius: 16px; padding: 20px; display: flex; flex-direction: column; gap: 16px; min-width: 0; }
+.panel h2, .res-head h2 { font-family: var(--font-display); font-weight: 700; font-size: 22px; letter-spacing: -0.01em; margin: 0; }
+.panel-head { display: flex; align-items: baseline; justify-content: space-between; gap: 12px; }
+.note { margin: 0; font-size: 13px; color: var(--muted); }
+.note.example { background: var(--field); border-radius: 10px; padding: 10px 12px; color: var(--ink); }
+
+/* Fields and buttons */
+input[type="text"], input[type="number"], textarea {
+  background: var(--field);
+  color: var(--ink);
+  border: 1px solid var(--line);
+  border-radius: 9px;
+  padding: 10px 12px;
+  font: inherit;
+  min-width: 0;
+  width: 100%;
+}
+textarea { resize: vertical; min-height: 110px; font-family: var(--font-mono); font-size: 13px; }
+input:focus-visible, textarea:focus-visible { outline: 2px solid var(--accent); outline-offset: 1px; border-color: var(--accent); }
+input[type="number"] { font-family: var(--font-mono); font-variant-numeric: tabular-nums; text-align: center; }
+button, .btn {
+  font: inherit; font-weight: 600; cursor: pointer;
+  border-radius: 10px; padding: 10px 16px;
+  border: 1px solid var(--line); background: transparent; color: var(--ink);
+  display: inline-flex; align-items: center; justify-content: center; gap: 8px;
+}
+button:hover, .btn:hover { border-color: var(--muted); }
+button:focus-visible, .btn:focus-visible, summary:focus-visible, input[type="file"]:focus-visible + .btn { outline: 3px solid var(--accent); outline-offset: 2px; }
+button.primary { background: var(--accent); color: var(--accent-ink); border-color: var(--accent); font-weight: 700; }
+button.primary:hover { filter: brightness(1.07); }
+button:disabled { opacity: 0.45; cursor: not-allowed; filter: none; }
+button.danger { color: var(--danger); }
+.sr-only { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; }
+
+/* Participants */
+.add { display: flex; flex-wrap: wrap; gap: 8px; }
+.add .in-name { flex: 1 1 200px; }
+.add .in-tk { flex: 0 0 88px; width: 88px; }
+.cols, .row { display: grid; grid-template-columns: minmax(0, 1fr) 84px 36px; gap: 8px; align-items: center; }
+.cols { font-size: 12px; letter-spacing: 0.05em; text-transform: uppercase; color: var(--muted); padding: 0 2px; }
+.cols span:nth-child(2) { text-align: center; }
+.list { display: flex; flex-direction: column; gap: 6px; max-height: 440px; overflow-y: auto; padding-right: 2px; }
+.namecell { display: flex; align-items: center; gap: 6px; min-width: 0; }
+.wins {
+  flex: none; background: var(--win); color: var(--win-ink);
+  font-family: var(--font-mono); font-weight: 700; font-size: 11px;
+  border-radius: 999px; padding: 3px 9px; white-space: nowrap;
+}
+.icon-btn { padding: 0; width: 36px; height: 36px; color: var(--muted); }
+.icon-btn:hover { color: var(--danger); border-color: var(--danger); }
+.empty-list { border: 1.5px dashed var(--line); border-radius: 12px; padding: 22px 16px; text-align: center; color: var(--muted); }
+details.bulk { border-top: 1px solid var(--line); padding-top: 14px; }
+details.bulk summary { cursor: pointer; font-weight: 600; }
+.bulk-body { display: flex; flex-direction: column; gap: 10px; margin-top: 12px; }
+.bulk-actions { display: flex; flex-wrap: wrap; gap: 8px; }
+.bulk-actions .btn input { display: none; }
+.foot-actions { display: flex; justify-content: flex-end; }
+
+/* Draw panel */
+.prize-row { display: flex; align-items: center; gap: 16px; flex-wrap: wrap; }
+.prize-row label { font-weight: 600; }
+.prizes { font-family: var(--font-display) !important; font-weight: 700; font-size: 42px !important; line-height: 1.1; width: 132px !important; padding: 8px 10px; }
+.hint { margin: 0; font-size: 13px; color: var(--muted); }
+.hint.warn, .status.warn { color: var(--danger); }
+.check { display: flex; align-items: center; gap: 10px; font-size: 14px; }
+.check input { width: 18px; height: 18px; accent-color: var(--accent); }
+.go { font-size: 18px; padding: 14px 20px; width: 100%; }
+.status { margin: 0; min-height: 1.4em; font-size: 13px; color: var(--muted); }
+
+/* Results */
+.res-head { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 10px; }
+.res-head .count { font-family: var(--font-mono); font-size: 13px; color: var(--muted); margin-left: 10px; }
+.res-tools { display: flex; flex-wrap: wrap; gap: 8px; }
+.res-tools button { padding: 7px 12px; font-size: 14px; }
+.results { display: flex; flex-direction: column; gap: 14px; min-width: 0; }
+.tickets { display: flex; flex-direction: column; gap: 12px; }
+.empty-ticket {
+  border: 1.5px dashed var(--line); border-radius: 14px; padding: 28px 18px;
+  color: var(--muted); text-align: center;
+}
+.empty-ticket b { display: block; font-family: var(--font-display); font-size: 18px; color: var(--ink); margin-bottom: 4px; }
+
+.ticket { display: grid; grid-template-columns: 92px minmax(0, 1fr); background: var(--surface); border-radius: 14px; position: relative; overflow: hidden; }
+.ticket::before, .ticket::after {
+  content: ""; position: absolute; left: 83px; width: 18px; height: 18px; border-radius: 50%; background: var(--bg);
+}
+.ticket::before { top: -9px; }
+.ticket::after { bottom: -9px; }
+.stub { background: var(--accent); color: var(--accent-ink); display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 14px 6px; gap: 2px; }
+.stub-l { font-family: var(--font-mono); font-size: 10px; letter-spacing: 0.16em; font-weight: 700; }
+.stub-n { font-family: var(--font-mono); font-weight: 700; font-size: 34px; line-height: 1; font-variant-numeric: tabular-nums; }
+.tbody { border-left: 2px dashed var(--line); padding: 14px 16px; display: flex; flex-direction: column; justify-content: center; gap: 4px; min-width: 0; }
+.tname { margin: 0; font-family: var(--font-display); font-weight: 700; font-size: 22px; line-height: 1.2; overflow-wrap: anywhere; }
+.tname .hl { box-decoration-break: clone; -webkit-box-decoration-break: clone; }
+.ticket.locked .tname .hl { background-image: linear-gradient(transparent 62%, var(--win) 62%); }
+.ticket.rolling .tname { color: var(--muted); }
+.tsub { margin: 0; font-family: var(--font-mono); font-size: 12px; color: var(--muted); }
+.ticket.pop { animation: pop 0.38s ease-out; }
+@keyframes pop { from { transform: scale(0.96); opacity: 0.6; } to { transform: scale(1); opacity: 1; } }
+@media (prefers-reduced-motion: reduce) { .ticket.pop { animation: none; } }
+@media (max-width: 480px) {
+  .ticket { grid-template-columns: 74px minmax(0, 1fr); }
+  .ticket::before, .ticket::after { left: 65px; }
+  .stub-n { font-size: 28px; }
+  .tname { font-size: 19px; }
+}
+
+.summary { background: var(--surface); border-radius: 14px; padding: 16px; display: flex; flex-direction: column; gap: 10px; }
+.summary h3 { margin: 0; font-family: var(--font-display); font-size: 16px; }
+.chips { list-style: none; margin: 0; padding: 0; display: flex; flex-wrap: wrap; gap: 8px; }
+.chip { background: var(--field); border: 1px solid var(--line); border-radius: 999px; padding: 4px 12px; font-size: 14px; display: inline-flex; gap: 8px; align-items: baseline; }
+.chip b { font-family: var(--font-mono); font-size: 12px; color: var(--accent); }
+#copy-box { font-family: var(--font-mono); font-size: 13px; min-height: 120px; }
+</style>
+
+<div class="wrap">
+  <header class="top">
+    <div>
+      <h1>Sorteo - Ganadores Semana Universitaria</h1>
+      <p class="lead">Cada oportunidad suma. Una persona puede ganar varias veces, pero nunca más que las oportunidades que tiene.</p>
+    </div>
+    <div class="stats">
+      <div class="stat"><b id="st-people">0</b><span>participantes</span></div>
+      <div class="stat"><b id="st-tickets">0</b><span>oportunidades en juego</span></div>
+    </div>
+  </header>
+
+  <main class="layout">
+    <section class="panel" id="people-panel" aria-labelledby="h-people">
+      <div class="panel-head">
+        <h2 id="h-people">Participantes</h2>
+      </div>
+      <p class="note example" id="example-note" hidden>Esta es una lista de ejemplo. Vacíala o pega tus participantes para empezar.</p>
+
+      <form class="add" id="add-form" autocomplete="off">
+        <input type="text" id="add-name" class="in-name" placeholder="Nombres y apellidos" aria-label="Nombres y apellidos">
+        <input type="number" id="add-tickets" class="in-tk" min="1" step="1" value="1" inputmode="numeric" aria-label="Oportunidades">
+        <button type="submit" class="primary" id="add-btn">Agregar</button>
+      </form>
+
+      <div>
+        <div class="cols" aria-hidden="true"><span>Nombres y apellidos</span><span>Oportunidades</span><span></span></div>
+      </div>
+      <div class="list" id="list"></div>
+
+      <details class="bulk" id="bulk">
+        <summary>Pegar una lista o cargar un archivo</summary>
+        <div class="bulk-body">
+          <p class="note">Una persona por línea, con el nombre y luego las oportunidades. Sirve pegar dos columnas copiadas desde Excel, o texto como <b>DIANA LLERENA, 3</b>. Si no pones un número, recibe 1 oportunidad. Si el nombre ya existe, se suman las oportunidades.</p>
+          <textarea id="bulk-text" placeholder="DIANA LLERENA, 3&#10;MARTHA ROJAS VEGA, 4&#10;JORGE QUISPE, 1" aria-label="Lista de participantes"></textarea>
+          <div class="bulk-actions">
+            <button type="button" class="primary" id="bulk-add">Agregar a la lista</button>
+            <label class="btn" for="file-in">
+              <input type="file" id="file-in" accept=".csv,.tsv,.txt,text/plain,text/csv">
+              Cargar CSV o TXT
+            </label>
+          </div>
+        </div>
+      </details>
+      <div class="foot-actions">
+        <button type="button" class="danger" id="clear-list">Vaciar lista</button>
+      </div>
+    </section>
+
+    <section class="side" aria-label="Sorteo">
+      <div class="panel" id="draw-panel">
+        <h2>Sorteo</h2>
+        <div class="prize-row">
+          <label for="prizes">Cantidad de premios</label>
+          <input type="number" id="prizes" class="prizes" min="1" step="1" value="3" inputmode="numeric">
+        </div>
+        <p class="hint" id="hint"></p>
+        <label class="check" for="reverse">
+          <input type="checkbox" id="reverse">
+          Sortear desde el último premio hasta el primero
+        </label>
+        <button type="button" class="primary go" id="go">Sortear</button>
+        <p class="status" id="status" role="status" aria-live="polite"></p>
+      </div>
+
+      <div class="results" id="results">
+        <div class="res-head">
+          <div><h2 style="display:inline">Ganadores</h2><span class="count" id="res-count"></span></div>
+          <div class="res-tools">
+            <button type="button" id="skip" hidden>Mostrar todo</button>
+            <button type="button" id="copy" hidden>Copiar resultados</button>
+            <button type="button" id="reset" hidden>Borrar resultados</button>
+          </div>
+        </div>
+        <div class="empty-ticket" id="res-empty"><b>Aquí saldrán los premios</b>Define la cantidad de premios y pulsa Sortear.</div>
+        <div class="tickets" id="res-list"></div>
+        <textarea id="copy-box" readonly hidden aria-label="Resultados para copiar"></textarea>
+        <div class="summary" id="res-summary" hidden>
+          <h3>Resumen por persona</h3>
+          <ul class="chips" id="chips"></ul>
+        </div>
+      </div>
+    </section>
+  </main>
+</div>
+
+<script>
+(function () {
+  'use strict';
+  var KEY = 'rifa-por-tickets-v1';
+  var $ = function (id) { return document.getElementById(id); };
+  var reduce = !!(window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches);
+  var seq = 0;
+  function newId() { seq += 1; return 'p' + seq; }
+  function el(tag, cls, text) {
+    var e = document.createElement(tag);
+    if (cls) e.className = cls;
+    if (text != null) e.textContent = text;
+    return e;
+  }
+
+  var state = { people: [], results: [], running: false, skip: false, example: false, shown: 0 };
+  var EXAMPLES = [
+    ['DIANA LLERENA', 3], ['CARLOS MENDOZA PAREDES', 1], ['LUCÍA FERNÁNDEZ', 2], ['JORGE QUISPE', 1],
+    ['MARTHA ROJAS VEGA', 4], ['ANDRÉS SALAZAR', 1], ['ROSA HUAMÁN', 2], ['PEDRO CASTILLO', 1]
+  ];
+
+  var list = $('list'), statusEl = $('status'), hint = $('hint'), prizes = $('prizes');
+  var goBtn = $('go'), resList = $('res-list'), resEmpty = $('res-empty'), resCount = $('res-count');
+  var skipBtn = $('skip'), copyBtn = $('copy'), resetBtn = $('reset');
+  var summaryBox = $('res-summary'), chips = $('chips'), copyBox = $('copy-box');
+  var exampleNote = $('example-note'), peoplePanel = $('people-panel');
+
+  function clean(s) { return String(s == null ? '' : s).replace(/\s+/g, ' ').trim(); }
+  function keyOf(s) { return clean(s).normalize('NFD').replace(/[̀-ͯ]/g, '').toLowerCase(); }
+  function toInt(v, d) { var n = parseInt(v, 10); return isFinite(n) ? n : d; }
+  function active() { return state.people.filter(function (p) { return clean(p.name) && p.tickets > 0; }); }
+  function totalTickets() { return active().reduce(function (a, p) { return a + p.tickets; }, 0); }
+
+  function say(msg, warn) {
+    statusEl.textContent = msg || '';
+    statusEl.className = 'status' + (warn ? ' warn' : '');
+  }
+
+  /* Storage: convenience only */
+  function save() {
+    try {
+      localStorage.setItem(KEY, JSON.stringify(state.people.map(function (p) { return { name: p.name, tickets: p.tickets }; })));
+    } catch (e) { /* ignore */ }
+  }
+  function load() {
+    try {
+      var raw = localStorage.getItem(KEY);
+      if (raw) { var arr = JSON.parse(raw); if (Array.isArray(arr)) return arr; }
+    } catch (e) { /* ignore */ }
+    return null;
+  }
+
+  /* Randomness */
+  function randInt(max) {
+    if (window.crypto && window.crypto.getRandomValues) {
+      var a = new Uint32Array(1);
+      var lim = Math.floor(4294967296 / max) * max;
+      do { window.crypto.getRandomValues(a); } while (a[0] >= lim);
+      return a[0] % max;
+    }
+    return Math.floor(Math.random() * max);
+  }
+
+  /* Draw: every remaining ticket is one entry. A win uses up one ticket of that person. */
+  function computeDraw(n, reverse) {
+    var pool = active().map(function (p) { return { p: p, left: p.tickets, won: 0 }; });
+    var total = pool.reduce(function (a, x) { return a + x.left; }, 0);
+    var out = [];
+    for (var i = 0; i < n; i++) {
+      var r = randInt(total), acc = 0, chosen = null;
+      for (var j = 0; j < pool.length; j++) {
+        acc += pool[j].left;
+        if (r < acc) { chosen = pool[j]; break; }
+      }
+      chosen.left -= 1; chosen.won += 1; total -= 1;
+      out.push({ pid: chosen.p.id, name: clean(chosen.p.name), nth: chosen.won, of: chosen.p.tickets });
+    }
+    out.forEach(function (s, i) { s.prize = reverse ? n - i : i + 1; });
+    return out;
+  }
+  window.__rifaDraw = computeDraw;
+
+  /* Participants */
+  function addPerson(name, tickets) {
+    name = clean(name);
+    if (!name) return 'skip';
+    var k = keyOf(name);
+    for (var i = 0; i < state.people.length; i++) {
+      if (keyOf(state.people[i].name) === k) { state.people[i].tickets += tickets; return 'merged'; }
+    }
+    state.people.push({ id: newId(), name: name, tickets: tickets });
+    return 'new';
+  }
+
+  function parseList(text) {
+    var out = [], first = true;
+    text.split(/\r?\n/).forEach(function (raw) {
+      var line = raw.trim();
+      if (!line) return;
+      if (first) {
+        first = false;
+        if (!/\d/.test(line) && /ticket|oportunidad|nombre/i.test(line)) return;
+      }
+      var name, tk = 1, m, parts;
+      if (line.indexOf('\t') > -1) {
+        parts = line.split('\t');
+        var last = parts[parts.length - 1];
+        if (parts.length > 1 && /^\s*\d+\s*$/.test(last)) { tk = parseInt(last, 10); name = parts.slice(0, -1).join(' '); }
+        else { name = parts.join(' '); }
+      } else if ((m = line.match(/^(.*?)[\s,;]+(\d+)\s*$/))) {
+        name = m[1]; tk = parseInt(m[2], 10);
+      } else {
+        name = line;
+      }
+      name = clean(String(name).replace(/^[\s"']+|[\s"',;]+$/g, ''));
+      if (!name) return;
+      out.push({ name: name, tickets: Math.max(0, isFinite(tk) ? tk : 1) });
+    });
+    return out;
+  }
+
+  function importText(text) {
+    var rows = parseList(text);
+    if (!rows.length) { say('No encontré participantes en ese texto.', true); return; }
+    var added = 0, merged = 0;
+    rows.forEach(function (r) {
+      var res = addPerson(r.name, r.tickets);
+      if (res === 'new') added += 1; else if (res === 'merged') merged += 1;
+    });
+    renderRows();
+    changed(true);
+    say('Se agregaron ' + added + ' participantes' + (merged ? ' y se sumaron oportunidades a ' + merged + ' que ya estaban' : '') + '.');
+  }
+
+  /* Rendering */
+  function renderStats() {
+    $('st-people').textContent = String(active().length);
+    $('st-tickets').textContent = String(totalTickets());
+  }
+
+  function refreshDraw() {
+    var t = totalTickets(), n = toInt(prizes.value, 0);
+    prizes.max = String(t || 1);
+    var over = t > 0 && n > t;
+    if (!t) hint.textContent = 'Agrega participantes con al menos 1 oportunidad para sortear.';
+    else if (over) hint.textContent = 'Hay más premios que oportunidades. Baja la cantidad a ' + t + ' o menos.';
+    else hint.textContent = 'Oportunidades en juego: ' + t + '. Puedes sortear hasta ' + t + ' premios.';
+    hint.className = 'hint' + ((over || !t) ? ' warn' : '');
+    goBtn.disabled = state.running || !(n >= 1 && n <= t);
+  }
+
+  function renderRows() {
+    list.textContent = '';
+    if (!state.people.length) {
+      list.appendChild(el('div', 'empty-list', 'Aún no hay participantes. Agrega uno arriba o pega una lista.'));
+      return;
+    }
+    var wins = {};
+    state.results.forEach(function (r) { wins[r.pid] = (wins[r.pid] || 0) + 1; });
+    state.people.forEach(function (p) {
+      var row = el('div', 'row');
+      var cell = el('div', 'namecell');
+      var ni = document.createElement('input');
+      ni.type = 'text'; ni.id = 'name-' + p.id; ni.value = p.name;
+      ni.setAttribute('aria-label', 'Nombres y apellidos');
+      ni.dataset.id = p.id; ni.dataset.field = 'name';
+      cell.appendChild(ni);
+      if (wins[p.id]) cell.appendChild(el('span', 'wins', 'Ganó ' + wins[p.id] + ' de ' + p.tickets));
+      var ti = document.createElement('input');
+      ti.type = 'number'; ti.id = 'tk-' + p.id; ti.min = '1'; ti.step = '1'; ti.value = String(p.tickets);
+      ti.setAttribute('inputmode', 'numeric');
+      ti.setAttribute('aria-label', 'Oportunidades de ' + p.name);
+      ti.dataset.id = p.id; ti.dataset.field = 'tickets';
+      var del = document.createElement('button');
+      del.type = 'button'; del.className = 'icon-btn'; del.dataset.del = p.id;
+      del.setAttribute('aria-label', 'Quitar a ' + p.name);
+      del.innerHTML = '<svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><path d="M3 3l10 10M13 3L3 13"/></svg>';
+      row.appendChild(cell); row.appendChild(ti); row.appendChild(del);
+      list.appendChild(row);
+    });
+  }
+
+  function ticketParts(s, rolling) {
+    var t = el('article', 'ticket ' + (rolling ? 'rolling' : 'locked'));
+    var stub = el('div', 'stub');
+    stub.appendChild(el('span', 'stub-l', 'PREMIO'));
+    stub.appendChild(el('span', 'stub-n', String(s.prize)));
+    var body = el('div', 'tbody');
+    var nm = el('p', 'tname');
+    var hl = el('span', 'hl', rolling ? '…' : s.name);
+    nm.appendChild(hl);
+    var sub = el('p', 'tsub', rolling ? 'Sorteando' : 'Oportunidad ' + s.nth + ' de ' + s.of);
+    body.appendChild(nm); body.appendChild(sub);
+    t.appendChild(stub); t.appendChild(body);
+    return { t: t, hl: hl, sub: sub };
+  }
+
+  function lock(parts, s, animate) {
+    parts.hl.textContent = s.name;
+    parts.sub.textContent = 'Oportunidad ' + s.nth + ' de ' + s.of;
+    parts.t.className = 'ticket locked' + (animate && !reduce ? ' pop' : '');
+  }
+
+  function renderSummary() {
+    chips.textContent = '';
+    var map = {}, order = [];
+    state.results.forEach(function (r) {
+      if (!map[r.pid]) { map[r.pid] = { name: r.name, wins: 0, of: r.of }; order.push(r.pid); }
+      map[r.pid].wins += 1;
+    });
+    order.map(function (id) { return map[id]; })
+      .sort(function (a, b) { return b.wins - a.wins || a.name.localeCompare(b.name); })
+      .forEach(function (x) {
+        var li = el('li', 'chip');
+        li.appendChild(el('span', null, x.name));
+        li.appendChild(el('b', null, x.wins + ' de ' + x.of));
+        chips.appendChild(li);
+      });
+  }
+
+  function chrome() {
+    var has = state.results.length > 0;
+    var shown = state.running ? state.shown : state.results.length;
+    resEmpty.hidden = has || state.running;
+    skipBtn.hidden = !state.running;
+    copyBtn.hidden = !has || state.running;
+    resetBtn.hidden = !has || state.running;
+    if (has || state.running) {
+      var total = state.running ? state.total : state.results.length;
+      resCount.textContent = shown + ' de ' + total;
+    } else resCount.textContent = '';
+    if (has && !state.running) { renderSummary(); summaryBox.hidden = false; } else summaryBox.hidden = true;
+    if (!has) copyBox.hidden = true;
+  }
+
+  function renderResults() {
+    resList.textContent = '';
+    state.results.forEach(function (s) {
+      var p = ticketParts(s, false);
+      resList.appendChild(p.t);
+    });
+    chrome();
+  }
+
+  /* Changes to the list wipe a previous draw */
+  function changed(wasBulk) {
+    state.example = false;
+    exampleNote.hidden = true;
+    if (state.results.length) {
+      state.results = [];
+      renderResults();
+      Array.prototype.forEach.call(list.querySelectorAll('.wins'), function (n) { n.remove(); });
+      if (!wasBulk) say('Cambió la lista, así que se borró el sorteo anterior.');
+    }
+    save(); renderStats(); refreshDraw();
+  }
+
+  function pause(ms) { return new Promise(function (r) { setTimeout(r, ms); }); }
+  function roll(parts, ms, names) {
+    return new Promise(function (resolve) {
+      if (ms <= 0 || state.skip || reduce) { resolve(); return; }
+      var t0 = Date.now();
+      var iv = setInterval(function () {
+        if (state.skip || Date.now() - t0 >= ms) { clearInterval(iv); resolve(); return; }
+        parts.hl.textContent = names[randInt(names.length)];
+      }, 70);
+    });
+  }
+
+  async function run() {
+    if (state.running) return;
+    var n = toInt(prizes.value, 0), t = totalTickets();
+    if (!(n >= 1) || n > t) { say('La cantidad de premios debe estar entre 1 y ' + t + '.', true); return; }
+    var drawn = computeDraw(n, $('reverse').checked);
+    var names = active().map(function (p) { return clean(p.name); });
+    state.results = []; state.running = true; state.skip = false; state.shown = 0; state.total = n;
+    peoplePanel.inert = true; prizes.disabled = true;
+    resList.textContent = ''; copyBox.hidden = true;
+    Array.prototype.forEach.call(list.querySelectorAll('.wins'), function (x) { x.remove(); });
+    say('Sorteando…');
+    refreshDraw(); chrome();
+    var ms = n <= 8 ? 1300 : n <= 20 ? 700 : n <= 60 ? 250 : 0;
+    for (var i = 0; i < drawn.length; i++) {
+      var s = drawn[i];
+      var parts = ticketParts(s, true);
+      resList.appendChild(parts.t);
+      try { parts.t.scrollIntoView({ block: 'nearest', behavior: reduce ? 'auto' : 'smooth' }); } catch (e) { /* ignore */ }
+      await roll(parts, ms, names);
+      lock(parts, s, true);
+      state.shown = i + 1;
+      state.results.push(s);
+      chrome();
+      if (!state.skip && !reduce && i < drawn.length - 1) await pause(n <= 20 ? 350 : 60);
+    }
+    state.running = false; state.skip = false;
+    peoplePanel.inert = false; prizes.disabled = false;
+    renderRows(); chrome(); refreshDraw();
+    var distinct = {};
+    drawn.forEach(function (s) { distinct[s.pid] = 1; });
+    say('Listo: ' + n + (n === 1 ? ' premio entregado a ' : ' premios entregados a ') + Object.keys(distinct).length + (Object.keys(distinct).length === 1 ? ' persona.' : ' personas.'));
+  }
+
+  /* Events */
+  $('add-form').addEventListener('submit', function (e) {
+    e.preventDefault();
+    var nameIn = $('add-name'), tkIn = $('add-tickets');
+    var name = clean(nameIn.value);
+    if (!name) { say('Escribe nombres y apellidos.', true); nameIn.focus(); return; }
+    var tk = Math.max(1, toInt(tkIn.value, 1));
+    var res = addPerson(name, tk);
+    nameIn.value = ''; tkIn.value = '1';
+    renderRows(); changed(false);
+    list.scrollTop = list.scrollHeight;
+    say(res === 'merged' ? name + ' ya estaba en la lista, se sumaron ' + tk + ' oportunidades.' : 'Se agregó a ' + name + ' con ' + tk + (tk === 1 ? ' oportunidad.' : ' oportunidades.'));
+    nameIn.focus();
+  });
+
+  list.addEventListener('input', function (e) {
+    var t = e.target, p;
+    if (!t.dataset || !t.dataset.id) return;
+    state.people.forEach(function (x) { if (x.id === t.dataset.id) p = x; });
+    if (!p) return;
+    if (t.dataset.field === 'name') p.name = t.value;
+    else p.tickets = Math.max(0, toInt(t.value, 0));
+    changed(false);
+  });
+  list.addEventListener('change', function (e) {
+    var t = e.target;
+    if (t.dataset && t.dataset.field === 'tickets') {
+      var v = Math.max(1, toInt(t.value, 1));
+      t.value = String(v);
+      state.people.forEach(function (x) { if (x.id === t.dataset.id) x.tickets = v; });
+      changed(false);
+    }
+  });
+  list.addEventListener('click', function (e) {
+    var b = e.target.closest ? e.target.closest('button[data-del]') : null;
+    if (!b) return;
+    state.people = state.people.filter(function (x) { return x.id !== b.dataset.del; });
+    renderRows(); changed(false);
+  });
+
+  $('bulk-add').addEventListener('click', function () {
+    var ta = $('bulk-text');
+    importText(ta.value);
+    if (parseList(ta.value).length) ta.value = '';
+  });
+  $('file-in').addEventListener('change', function (e) {
+    var f = e.target.files && e.target.files[0];
+    if (!f) return;
+    var rd = new FileReader();
+    rd.onload = function () { importText(String(rd.result || '')); };
+    rd.onerror = function () { say('No pude leer ese archivo.', true); };
+    rd.readAsText(f);
+    e.target.value = '';
+  });
+
+  var clearTimer = null;
+  $('clear-list').addEventListener('click', function () {
+    var b = this;
+    if (!clearTimer) {
+      b.textContent = '¿Seguro? Pulsa otra vez';
+      clearTimer = setTimeout(function () { b.textContent = 'Vaciar lista'; clearTimer = null; }, 4000);
+      return;
+    }
+    clearTimeout(clearTimer); clearTimer = null; b.textContent = 'Vaciar lista';
+    state.people = []; state.results = [];
+    renderRows(); renderResults(); changed(true);
+    say('La lista quedó vacía.');
+  });
+
+  prizes.addEventListener('input', refreshDraw);
+  goBtn.addEventListener('click', run);
+  skipBtn.addEventListener('click', function () { state.skip = true; });
+  resetBtn.addEventListener('click', function () {
+    state.results = [];
+    renderRows(); renderResults(); say('Resultados borrados.');
+  });
+  copyBtn.addEventListener('click', function () {
+    var lines = state.results.slice().sort(function (a, b) { return a.prize - b.prize; })
+      .map(function (s) { return 'Premio ' + s.prize + ': ' + s.name; });
+    var text = 'Resultados del sorteo\n' + lines.join('\n');
+    function fallback() {
+      copyBox.value = text; copyBox.hidden = false; copyBox.focus(); copyBox.select();
+      say('Selecciona el texto y cópialo con tu teclado.');
+    }
+    try {
+      navigator.clipboard.writeText(text).then(function () { say('Resultados copiados.'); }, fallback);
+    } catch (err) { fallback(); }
+  });
+
+  /* Init */
+  var saved = load();
+  if (saved !== null) {
+    state.people = saved.map(function (x) { return { id: newId(), name: clean(x.name), tickets: Math.max(0, toInt(x.tickets, 1)) }; });
+  } else {
+    state.people = EXAMPLES.map(function (x) { return { id: newId(), name: x[0], tickets: x[1] }; });
+    state.example = true;
+    exampleNote.hidden = false;
+  }
+  renderRows(); renderStats(); renderResults(); refreshDraw();
+})();
+</script>
+
+</body></html>
